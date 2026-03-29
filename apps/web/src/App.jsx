@@ -1,16 +1,7 @@
 import { Link, Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { useEffect, useMemo, useState } from "react";
 
-type Account = {
-  id: string;
-  name: string;
-  industry: string | null;
-  country: string | null;
-  website: string | null;
-  created_at: string;
-};
-
-const API_URL = "http://localhost:3001";
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3001";
 
 export default function App() {
   return (
@@ -64,8 +55,8 @@ function Sidebar() {
 }
 
 function DashboardPage() {
-  const [apiOk, setApiOk] = useState<null | boolean>(null);
-  const [sbOk, setSbOk] = useState<null | boolean>(null);
+  const [apiOk, setApiOk] = useState(null);
+  const [sbOk, setSbOk] = useState(null);
 
   useEffect(() => {
     fetch(`${API_URL}/health`)
@@ -92,7 +83,7 @@ function DashboardPage() {
 }
 
 function AccountsPage() {
-  const [accounts, setAccounts] = useState<Account[]>([]);
+  const [accounts, setAccounts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
@@ -111,14 +102,14 @@ function AccountsPage() {
       const json = await res.json();
       if (!json.ok) throw new Error(json.error || "Error al cargar empresas");
       setAccounts(json.data || []);
-    } catch (e: any) {
+    } catch (e) {
       setError(e?.message ?? "No se pudo conectar con la API");
     } finally {
       setLoading(false);
     }
   }
 
-  async function createAccount(e: React.FormEvent) {
+  async function createAccount(e) {
     e.preventDefault();
     try {
       setSaving(true);
@@ -143,7 +134,7 @@ function AccountsPage() {
       setCountry("");
       setWebsite("");
       await loadAccounts();
-    } catch (e: any) {
+    } catch (e) {
       setError(e?.message ?? "Error al guardar");
     } finally {
       setSaving(false);
@@ -228,7 +219,7 @@ function ContactsPage() {
     <section>
       <h1 style={styles.title}>Contactos</h1>
       <div style={styles.panel}>
-        <p>Módulo en construcción: listado + crear contacto + vínculo con empresa.</p>
+        <p>Módulo en construcción.</p>
       </div>
     </section>
   );
@@ -239,13 +230,13 @@ function StagesPage() {
     <section>
       <h1 style={styles.title}>Etapas</h1>
       <div style={styles.panel}>
-        <p>Módulo en construcción: pipeline visual (Lead, Calificado, Propuesta, etc.).</p>
+        <p>Módulo en construcción.</p>
       </div>
     </section>
   );
 }
 
-function Card({ title, value }: { title: string; value: string }) {
+function Card({ title, value }) {
   return (
     <div style={styles.card}>
       <div style={{ fontSize: 13, opacity: 0.8 }}>{title}</div>
@@ -254,17 +245,7 @@ function Card({ title, value }: { title: string; value: string }) {
   );
 }
 
-function Input({
-  label,
-  value,
-  onChange,
-  required,
-}: {
-  label: string;
-  value: string;
-  onChange: (v: string) => void;
-  required?: boolean;
-}) {
+function Input({ label, value, onChange, required }) {
   return (
     <label style={{ display: "grid", gap: 6 }}>
       <span style={{ fontSize: 13, opacity: 0.9 }}>{label}</span>
@@ -278,7 +259,7 @@ function Input({
   );
 }
 
-const styles: Record<string, React.CSSProperties> = {
+const styles = {
   app: {
     display: "grid",
     gridTemplateColumns: "260px 1fr",
